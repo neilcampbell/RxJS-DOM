@@ -37,7 +37,7 @@
 
   function normalizeAjaxSuccessEvent(e, xhr) {
     var response = ('response' in xhr) ? xhr.response : xhr.responseText;
-	response = xhr.responseType === 'json' && response && typeof response === 'string' ? JSON.parse(response) : response;
+    response = xhr.responseType === 'json' && response && typeof response === 'string' ? JSON.parse(response) : response;
     return {
       response: response,
       status: xhr.status,
