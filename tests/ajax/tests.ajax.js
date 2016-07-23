@@ -559,7 +559,7 @@
         // Should not happen
         ok(false);
       },
-      function (x) {        
+      function (x) {
         // Ensure GET by default
         equal('GET', x.xhr.method);
 
