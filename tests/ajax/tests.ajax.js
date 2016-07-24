@@ -550,7 +550,6 @@
     requests[0].respond(200, { 'Content-Type': 'application/json' }, '[{ "id": 123 }]');
   });
 
-
   test('getJSON failure', function () {
     var source = Rx.DOM.getJSON('/products');
 
