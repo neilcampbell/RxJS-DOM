@@ -87,7 +87,7 @@
   function getCORSRequest() {
     var xhr = new root.XMLHttpRequest();
     if ('withCredentials' in xhr) {
-      xhr.withCredentials = true;
+      xhr.withCredentials = this.withCredentials ? true : false;
       return xhr;
     } else if (!!root.XDomainRequest) {
       return new XDomainRequest();
@@ -96,9 +96,9 @@
     }
   }
 
-  function normalizeAjaxSuccessEvent(e, xhr, settings) {
+  function normalizeAjaxSuccessEvent(e, xhr) {
     var response = ('response' in xhr) ? xhr.response : xhr.responseText;
-    response = settings.responseType === 'json' ? JSON.parse(response) : response;
+	response = xhr.responseType === 'json' && response && typeof response === 'string' ? JSON.parse(response) : response;
     return {
       response: response,
       status: xhr.status,
@@ -135,7 +135,7 @@
       var processResponse = function(xhr, e){
         var status = xhr.status === 1223 ? 204 : xhr.status;
         if ((status >= 200 && status <= 300) || status === 0 || status === '') {
-          o.onNext(normalizeSuccess(e, xhr, settings));
+          o.onNext(normalizeSuccess(e, xhr));
           o.onCompleted();
         } else {
           o.onError(settings.normalizeError(e, xhr, 'error'));
@@ -156,6 +156,8 @@
           xhr.open(settings.method, settings.url, settings.async);
         }
 
+        xhr.responseType = settings.responseType;
+        
         var headers = settings.headers;
         for (var header in headers) {
           if (hasOwnProperty.call(headers, header)) {
@@ -266,8 +268,9 @@
       headers: {},
       responseType: 'text',
       timeout: 0,
+      withCredentials: false,
       createXHR: function(){
-        return this.crossDomain ? getCORSRequest() : getXMLHttpRequest()
+        return this.crossDomain ? getCORSRequest.call(this) : getXMLHttpRequest()        
       },
       normalizeError: normalizeAjaxErrorEvent,
       normalizeSuccess: normalizeAjaxSuccessEvent
